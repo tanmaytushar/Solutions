@@ -37,54 +37,107 @@ template <class T, class V> void _print(map <T, V> v) {cerr << "[ "; for (auto i
 
 
 
-/*
-The author of the screenshot is always in the first position, so based on his screenshot, 
-nothing can be said about his first position. The rest of the chat participants are ordered based on the real order.
-Build a graph of n vertices from Aj to Aj+1 for all j except the first one 
-if there is an order to them -> topologicalSort there would exist a topologicalSort
-*/
 
-
-
-
-
-bool topologicalSort(int n, vector<vector<int>>& adj) {
-    vector<int> indegree(n, 0);
-    for (int u = 0; u < n; ++u)
-        for (int v : adj[u])
-            indegree[v]++;
-    queue<int> q;
-    for (int i = 0; i < n; ++i)
-        if (indegree[i] == 0)
-            q.push(i);
-    int count = 0;
-    while (!q.empty()) {
-        int u = q.front(); q.pop();
-        count++;
-        for (int v : adj[u]) {
-            if (--indegree[v] == 0)
-                q.push(v);
-        }
+class SegmentTree {
+    vector<int> tree;
+    int n;
+public:
+    SegmentTree(const vector<int>& arr) {
+        n = arr.size();
+        tree.resize(4 * n);
+        build(arr, 0, 0, n - 1);
     }
-    return count == n; 
-}
-void solve() {
-    int n, k;
-    cin >> n >> k;
-    vector<vector<int>> adj(n);
-    for (int i = 0; i < k; i++) {
-        vector<int> temp(n);
-        for (int j = 0; j < n; j++) {
-            cin >> temp[j];
-            temp[j]--;
+    void build(const vector<int>& arr, int node, int l, int r) {
+        if (l == r) {
+            tree[node] = arr[l];
+            return;
         }
-        for (int j = 1; j < n - 1; j++) {
-            int u = temp[j], v = temp[j + 1];
-            adj[u].push_back(v);
-        }
+        int mid = (l + r) / 2;
+        build(arr, 2 * node + 1, l, mid);
+        build(arr, 2 * node + 2, mid + 1, r);
+        tree[node] = tree[2 * node + 1] + tree[2 * node + 2];
     }
-    cout << (topologicalSort(n, adj) ? "Yes" : "No") << endl;
+    void pointUpdate(int idx, int val) {
+        update(0, 0, n - 1, idx, val);
+    }
+    void update(int node, int l, int r, int idx, int val) {
+        if (l == r) {
+            tree[node] = val;
+            return;
+        }
+        int mid = (l + r) / 2;
+        if (idx <= mid)
+            update(2 * node + 1, l, mid, idx, val);
+        else
+            update(2 * node + 2, mid + 1, r, idx, val);
+        tree[node] = tree[2 * node + 1] + tree[2 * node + 2];
+    }
+    int rangeSum(int ql, int qr) {
+        return query(0, 0, n - 1, ql, qr);
+    }
+    int query(int node, int l, int r, int ql, int qr) {
+        if (qr < l || r < ql)
+            return 0; 
+        if (ql <= l && r <= qr)
+            return tree[node]; 
+        int mid = (l + r) / 2;
+        int left = query(2 * node + 1, l, mid, ql, qr);
+        int right = query(2 * node + 2, mid + 1, r, ql, qr);
+        return left + right;
+    }
+};
+
+
+
+
+
+
+
+
+
+void solve(){
+  int n,q,globaltime = 0;cin >> n >> q;
+  vector<int> values(n);
+  for(auto &it : values) cin >> it;
+  vector<vector<int>> adj(n);
+  for(int i = 0;i<n-1;i++){
+    int u,v;cin >> u >> v;
+    u--,v--;
+    adj[u].push_back(v);
+    adj[v].push_back(u);
+  }
+  vector<int> intime(n),outtime(n);
+  auto dfs = [&](int node,int parent,auto &&f) -> void{
+    intime[node] = globaltime;
+    globaltime++;
+    for(auto &it : adj[node]){
+      f(it,node,f);
+    }
+    outtime[node] = globaltime;
+    globaltime++;
+  };
+  dfs(0,-1,dfs);
+  vector<int> a(2*n,0);
+  for(int i = 0;i<n;i++){
+    a[intime[i]] = values[i];
+  }
+  SegmentTree st(a);
+  while(q--){
+    int type;cin >> type;
+    if(type == 1){
+      int s,x;cin >> s >> x; s--;
+      st.pointUpdate(s,x);
+    }else{
+     int s;cin >> s;s--;
+     int time1 = intime[s],time2 = outtime[s];
+     int ans = st.rangeSum(time1,time2); 
+     cout << ans << " ";
+    }
+  }
+  cout << endl;
 }
+
+
 
 
 
@@ -111,8 +164,7 @@ signed main() {
   freopen("output.txt","w",stdout);
   freopen("Error.txt", "w", stderr);
 #endif
-   int t;
-   cin >> t;
+   int t = 1;
    while (t--) {
      solve(); 
    }
