@@ -45,58 +45,26 @@ template <class T, class V> void _print(map <T, V> v) {cerr << "[ "; for (auto i
 
 
 
-int mod_add(int a, int b) {
-    return (a + b) % MOD;
-}
-
-int mod_sub(int a, int b) {
-    return (a - b + MOD) % MOD;
-}
-
-int mod_mul(int a, int b) {
-    return (1LL * a * b) % MOD;
-}
-
-int mod_pow(int a, int b) {
-    int res = 1;
-    a %= MOD;
-    while (b > 0) {
-        if (b & 1) res = mod_mul(res, a);
-        a = mod_mul(a, a);
-        b >>= 1;
-    }
-    return res;
-}
 
 
 
-
-/*
--> the numbers are small then allows us to do as n * 2 ^ k dp 
--> dp[i][j] = take + not_take
--> not_take = dp[i+1][j]
--> take = dp[i+1][j & a[i]];
--> take could we are picking up an element for the first time i.e why 64 a sentinal value outside the range 
-final subproblem (0,64);
-*/
-
-
-void solve() {
-  int n, k;
-  cin >> n >> k;
-  vector<int> a(n);
-  for (auto &it : a) cin >> it;
-  vector<vector<int>> dp(n + 1, vector<int>(65, -1));
-  auto rec = [&](int i, int j, auto &&f) -> int {
-    if (i == n)
-      return (j != 64 && set_bits(j) == k) ? 1 : 0;
-    if (dp[i][j] != -1) return dp[i][j];
-    int not_take = f(i + 1, j, f);
-    int take = f(i + 1, j == 64 ? a[i] : (j & a[i]), f);
-    return dp[i][j] = mod_add(take, not_take);
-  };
-  int ans = rec(0, 64, rec); 
-  cout << ans << '\n';
+void solve(){
+  int n;cin >> n;
+  vector<pair<int,int>> a(n);
+  for(int i = 0;i<n;i++){
+    int x;cin >> x;
+    a[i] = {x,i};
+  }
+  sort(a.rbegin(),a.rend());
+  int ans = INT_MIN;
+  for(int i = 0;i<n-3;i++){
+    vector<int> dist = {a[i].second,a[i+1].second,a[i+2].second};
+    sort(dist.begin(),dist.end());
+    int temp = a[i].first + a[i+1].first + a[i+2].first;
+    temp -= (dist[2]-dist[0]);
+    ans = max(ans,temp);
+  } 
+  cout << ans << endl;
 }
 
 
