@@ -40,32 +40,33 @@ template <class T, class V> void _print(map <T, V> v) {cerr << "[ "; for (auto i
 
 
 
-/*
--> the idea is pretty first and foremost simply the given equation of Bl + Bm + Br - (r-l)
--> Bl+l + Bm + Br-r
-based on this you can either iterate on the M and look for best Bl and Br using prefix suffix 
-or design DP states 
-*/
-const int NEG_INF = -1e18;
-void solve() {
-    int n; cin >> n;
-    vector<int> a(n);
-    for (auto &it : a) cin >> it;
-    vector<vector<int>> dp(n + 1, vector<int>(3, -1));
-    auto rec = [&](int index, int count, auto &&f) -> int {
-        if (count == 3) return 0;
-        if (index >= n) return NEG_INF;
-        if (dp[index][count] != -1) return dp[index][count];
-        int nottake = f(index + 1, count, f);
-        int take = NEG_INF;
-        if (count == 0) take = a[index] + index + f(index + 1, count + 1, f);
-        else if (count == 1) take = a[index] + f(index + 1, count + 1, f);
-        else if (count == 2) take = a[index] - index + f(index + 1, count + 1, f);
-        return dp[index][count] = max(take, nottake);
-    };
-    cout << rec(0, 0, rec) << "\n";
-}
 
+
+
+
+
+
+
+
+void solve(){
+  int n;cin >> n;
+  vector<int> a(n);
+  for(auto &it : a) cin >> it;
+  map<vector<int>,int> m1;
+  int ans = 0;
+  for(int i = 0;i<=n-1;i++){
+    vector<int> current = {-1,a[i+1],a[i+2]};
+    ans += m1[current];
+    m1[current]++;
+    current = {a[i],-1,a[i+2]};
+    ans += m1[current];
+    m1[current]++;
+    current = {a[i],a[i+1],-1};
+    ans += m1[current];
+    m1[current]++;
+  }
+  cout << ans << endl;
+}
 
 
 
