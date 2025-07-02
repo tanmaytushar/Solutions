@@ -1,108 +1,96 @@
-/*
-a difficult questions 
-k <= 2000 so rather then counting all the possible string for alteast k count for atmost k - 1 and then subtract from total
-once we have this we realise 2000 is small it allows us to do a freq * 2000 dp -> 
--> look at the recursive code first you realise a couple of things from there dp[i][j] only depends on dp[i-1] this allows you to optimise space 
--> also for the sum loop we can optimise it using prefix sum 
-*/
+#include <bits/stdc++.h>
+using namespace std;
+#define int long long
+#define MOD 1000000007
+#define endl '\n'
+#define ll long long
+#define PI 3.141592653589793238462
+#define set_bits __builtin_popcountll
+typedef unsigned long long ull;
+typedef long double lld;
+#ifndef ONLINE_JUDGE
+#define debug(x) cerr << #x <<" "; _print(x); cerr << endl;
+#else
+#define debug(x)
+#endif
 
-class Solution {
-public:
-    const int mod = 1e9 + 7;
+mt19937_64 RNG(chrono::steady_clock::now().time_since_epoch().count());
+void _print(int t) {cerr << t;}
+void _print(string t) {cerr << t;}
+void _print(char t) {cerr << t;}
+void _print(lld t) {cerr << t;}
+void _print(double t) {cerr << t;}
+void _print(ull t) {cerr << t;}
 
-    int possibleStringCount(string word, int k) {
-        int n = word.size(), cnt = 1;
-        vector<int> freq;
-        for (int i = 1; i < n; ++i) {
-            if (word[i] == word[i - 1]) {
-                ++cnt;
-            } else {
-                freq.push_back(cnt);
-                cnt = 1;
-            }
-        }
-        freq.push_back(cnt);
+template <class T, class V> void _print(pair <T, V> p);
+template <class T> void _print(vector <T> v);
+template <class T> void _print(set <T> v);
+template <class T, class V> void _print(map <T, V> v);
+template <class T> void _print(multiset <T> v);
+template <class T, class V> void _print(pair <T, V> p) {cerr << "{"; _print(p.first); cerr << ","; _print(p.second); cerr << "}";}
+template <class T> void _print(vector <T> v) {cerr << "[ "; for (T i : v) {_print(i); cerr << " ";} cerr << "]";}
+template <class T> void _print(set <T> v) {cerr << "[ "; for (T i : v) {_print(i); cerr << " ";} cerr << "]";}
+template <class T> void _print(multiset <T> v) {cerr << "[ "; for (T i : v) {_print(i); cerr << " ";} cerr << "]";}
+template <class T, class V> void _print(map <T, V> v) {cerr << "[ "; for (auto i : v) {_print(i); cerr << " ";} cerr << "]";}
 
-        int total = 1;
-        for (auto &f : freq)
-            total = (1LL * total * f) % mod;
 
-        if (freq.size() >= k) // -> if the size of freq is more then k then all the string are of len >= k
-            return total;
-        
-        int m = freq.size();
-        vector<int> prev(k, 0), curr(k, 0);
-        prev[0] = 1;
 
-        for (int i = 0; i < m; ++i) {
-            vector<int> prefix(k, 0);
-            prefix[0] = prev[0];
-            for (int j = 1; j < k; ++j)
-                prefix[j] = (prefix[j - 1] + prev[j]) % mod;
 
-            for (int len = 0; len < k; ++len) {
-                int l = len - freq[i]; // -> when we take all of the current f
-                int r = len - 1; // -> when we take min possible i.e 1
-                if (r < 0) {
-                    curr[len] = 0;
-                    continue;
-                }
-                int sum = prefix[r];
-                if (l > 0)
-                    sum = (sum - prefix[l - 1] + mod) % mod;
-                curr[len] = sum;
-            }
-            swap(prev, curr);
-        }
 
-        int invalid = 0;
-        for (int len = 1; len < k; ++len)
-            invalid = (invalid + prev[len]) % mod;
 
-        return (total - invalid + mod) % mod;
-    }
-};
 
-class Solution {
-public:
-    int possibleStringCount(string word, int k) {
-        int n = word.size(), cnt = 1;
-        vector<int> freq;
-        for (int i = 1; i < n; ++i) {
-            if (word[i] == word[i - 1]) {
-                ++cnt;
-            } else {
-                freq.push_back(cnt);
-                cnt = 1;
-            }
-        }
-        freq.push_back(cnt);
 
-        int total = 1;
-        for (auto &i : freq)
-            total = (1LL * total * i) % mod;
 
-        int m = freq.size();
-        vector<vector<int>> dp(m, vector<int>(k, -1));
 
-        function<int(int, int)> f = [&](int i, int j) -> int {
-            // Base cases
-            if (i < 0 && j == 0) return 1;
-            if (i < 0 || j < 0) return 0;
-            if (dp[i][j] != -1) return dp[i][j];
-            int ans = 0;
-            for (int t = 1; t <= freq[i]; ++t) {
-                ans = (ans + f(i - 1, j - t)) % mod;
-            }
-            return dp[i][j] = ans;
-        };
-        int invalid = 0;
-        for (int len = 1; len < k;len++) {
-            invalid = (invalid + f(m - 1, len)) % mod;
-        }
-        return (total - invalid + mod) % mod;
-    }
 
-private:
-    static const int mod = 1000000007;
-};
+
+
+
+
+
+void solve(){
+  // first lets take care of all the numbers that are equal all of them form nc3 * 6 
+  int n;cin >> n;
+  vector<int> a(n);for(auto &it : a) cin >> it;
+  sort(a.begin(),a.end());
+  debug(a);
+  
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+signed main() {
+   auto begin = std::chrono::high_resolution_clock::now();
+   ios::sync_with_stdio(0);
+   cin.tie(0);
+   cout.tie(0);
+
+#ifndef ONLINE_JUDGE
+  freopen("input.txt","r",stdin);
+  freopen("output.txt","w",stdout);
+  freopen("Error.txt", "w", stderr);
+#endif
+   int t;
+   cin >> t;
+   while (t--) {
+     solve(); 
+   }
+   auto end = std::chrono::high_resolution_clock::now();
+   auto elapsed = std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin);
+   cerr << "Time measured: " << elapsed.count() * 1e-9 << " seconds.\n";
+   return 0;
+}
