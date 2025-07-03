@@ -42,65 +42,28 @@ template <class T, class V> void _print(map <T, V> v) {cerr << "[ "; for (auto i
 
 
 
-int compute(int n, vector<vector<int>> &adj, vector<int> &values) {
-  int total = 0;
-  for (int start = 0; start < n; ++start) {
-    vector<int> freq(n + 2, 0);
-    set<int> missing;
-    for (int i = 0; i <= n + 1; ++i) missing.insert(i);
-    function<void(int, int)> dfs = [&](int u, int p) {
-      int val = values[u];
-      if (++freq[val] == 1) missing.erase(val);
-      if(u >= start){
-        total += *missing.begin(); 
-      }
-      for (int v : adj[u]) {
-        if (v != p) dfs(v, u);
-      }
-      if (--freq[val] == 0) missing.insert(val); 
-    };
-    dfs(start, -1);
-  }
-  return total;
-}
 
-/*
-The idea is to minimise the mex for every path i.e its better to put smaller values at the leaves 
-Once we have figured out the value for every node we need to calculuate the mex from every node to every other node using dfs 
-You also learnt how you calculuate mex on an list that is dynamic 
-*/
+
+
 
 
 
 void solve(){
-  int n; cin >> n;
-  vector<vector<int>> adj(n);
-  for(int i = 0; i < n - 1; i++){
-    int u, v; cin >> u >> v;
-    u--, v--;
-    adj[u].push_back(v);
-    adj[v].push_back(u);
+  int x,y,k;cin >> x >> y >> k;
+  int rem = x % y,left = y - rem;
+  if(left > k){
+    cout << x + k << endl;
+    return;
   }
-  vector<int> values(n), indegree(n);
-  for(int i = 0; i < n; i++){
-    indegree[i] = adj[i].size();
+  k-=left;
+  x+=left;
+  while(x % y == 0){
+    x = x/y;
   }
-  int current = 0;
-  queue<int> q;
-  for(int i = 0; i < n; i++){
-    if(indegree[i] == 1) q.push(i);
-  }
-  while(!q.empty()){
-    int node = q.front(); q.pop();
-    values[node] = current++;
-    for(auto &it : adj[node]){
-      indegree[it]--;
-      if(indegree[it] == 1) q.push(it);
-    }
-  }
-  debug(values);
-  int ans = compute(n,adj,values);
-  cout << ans << '\n';
+  // we get some value 
+  k = k - ((y-1)*(k/(y-1)));
+  int ans = (x+k) % (y-1);
+  cout << ans << endl;
 }
 
 
