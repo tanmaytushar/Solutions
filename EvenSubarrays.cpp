@@ -1,0 +1,111 @@
+#include <bits/stdc++.h>
+using namespace std;
+#define int long long
+#define MOD 1000000007
+#define endl '\n'
+#define ll long long
+#define PI 3.141592653589793238462
+#define set_bits __builtin_popcountll
+typedef unsigned long long ull;
+typedef long double lld;
+#ifndef ONLINE_JUDGE
+#define debug(x) cerr << #x <<" "; _print(x); cerr << endl;
+#else
+#define debug(x)
+#endif
+
+mt19937_64 RNG(chrono::steady_clock::now().time_since_epoch().count());
+void _print(int t) {cerr << t;}
+void _print(string t) {cerr << t;}
+void _print(char t) {cerr << t;}
+void _print(lld t) {cerr << t;}
+void _print(double t) {cerr << t;}
+void _print(ull t) {cerr << t;}
+
+template <class T, class V> void _print(pair <T, V> p);
+template <class T> void _print(vector <T> v);
+template <class T> void _print(set <T> v);
+template <class T, class V> void _print(map <T, V> v);
+template <class T> void _print(multiset <T> v);
+template <class T, class V> void _print(pair <T, V> p) {cerr << "{"; _print(p.first); cerr << ","; _print(p.second); cerr << "}";}
+template <class T> void _print(vector <T> v) {cerr << "[ "; for (T i : v) {_print(i); cerr << " ";} cerr << "]";}
+template <class T> void _print(set <T> v) {cerr << "[ "; for (T i : v) {_print(i); cerr << " ";} cerr << "]";}
+template <class T> void _print(multiset <T> v) {cerr << "[ "; for (T i : v) {_print(i); cerr << " ";} cerr << "]";}
+template <class T, class V> void _print(map <T, V> v) {cerr << "[ "; for (auto i : v) {_print(i); cerr << " ";} cerr << "]";}
+
+
+
+
+
+
+
+
+
+
+
+/*
+subrray xor can be calculated as subrray sum 
+only perfect squares have odd number of divisors 
+total - bad = good 
+*/
+
+
+void solve() {
+  int n;
+  cin >> n;
+  vector<int> a(n), freq(2 * n + 1, 0); 
+  for (int i = 0; i < n; i++) cin >> a[i];
+  int currXor = 0;
+  freq[0] = 1; 
+  int badCount = 0;
+  for (int i = 0; i < n; i++) {
+    currXor ^= a[i];
+    for (int j = 0; j * j < 2 * n; j++) {
+      int sq = j * j;
+      int need = currXor ^ sq;
+      if (need >= 0 && need <= 2 * n) {
+        badCount += freq[need];
+      }
+    }
+    freq[currXor]++;
+  }
+  int totalSubarrays = n * (n + 1LL) / 2;
+  cout << totalSubarrays - badCount << '\n';
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+signed main() {
+   auto begin = std::chrono::high_resolution_clock::now();
+   ios::sync_with_stdio(0);
+   cin.tie(0);
+   cout.tie(0);
+
+#ifndef ONLINE_JUDGE
+  freopen("input.txt","r",stdin);
+  freopen("output.txt","w",stdout);
+  freopen("Error.txt", "w", stderr);
+#endif
+   int t;
+   cin >> t;
+   while (t--) {
+     solve(); 
+   }
+   auto end = std::chrono::high_resolution_clock::now();
+   auto elapsed = std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin);
+   cerr << "Time measured: " << elapsed.count() * 1e-9 << " seconds.\n";
+   return 0;
+}
