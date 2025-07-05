@@ -1,4 +1,5 @@
 #include <bits/stdc++.h>
+#include <ostream>
 using namespace std;
 #define int long long
 #define MOD 1000000007
@@ -43,35 +44,37 @@ template <class T, class V> void _print(map <T, V> v) {cerr << "[ "; for (auto i
 
 
 
-/*
-subrray xor can be calculated as subrray sum 
-only perfect squares have odd number of divisors 
-total - bad = good 
-*/
 
 
-void solve() {
-  int n;
-  cin >> n;
-  vector<int> a(n), freq(2 * n + 1, 0); 
-  for (int i = 0; i < n; i++) cin >> a[i];
-  int currXor = 0;
-  freq[0] = 1; 
-  int badCount = 0;
-  for (int i = 0; i < n; i++) {
-    currXor ^= a[i];
-    for (int j = 0; j * j < 2 * n; j++) {
-      int sq = j * j;
-      int need = currXor ^ sq;
-      if (need >= 0 && need <= 2 * n) {
-        badCount += freq[need];
-      }
-    }
-    freq[currXor]++;
+
+
+
+void solve(){
+  int a, b, x, y;cin >> a >> b >> x >> y;
+  if(b - 1 < a){
+    cout << -1 << endl;
+    return;
   }
-  int totalSubarrays = n * (n + 1LL) / 2;
-  cout << totalSubarrays - badCount << '\n';
+  if(b == a){
+    cout << 0 << endl;
+    return;
+  }
+  if(b < a){
+    cout << y << endl;
+  }else{
+    int diff = (a-b), ans = diff * x;
+    bool iseven = false;
+    for(int i = b;i<=a;i++){
+      if(i%2 == 0) iseven = true;
+    }
+    if(iseven && y < x){
+      ans -= x;
+      ans += y;
+    }
+    cout << ans << endl;
+  }
 }
+
 
 
 
