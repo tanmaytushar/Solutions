@@ -40,61 +40,53 @@ template <class T, class V> void _print(map <T, V> v) {cerr << "[ "; for (auto i
 
 
 
-const int MAXM = 1e5;
-vector<int> factors[MAXM + 5];
-void init() {
-  for (int i = 1; i <= MAXM; i++) {
-    for (int j = i; j <= MAXM; j += i) {
-      factors[j].push_back(i);
+
+
+
+
+
+
+
+
+void solve(){
+  int n,a,b;cin >> n >> a >> b;
+  vector<vector<pair<int,int>>> adj(n);
+  for(int i = 0;i<n-1;i++){
+    int u,v,w;cin >> u >> v >> w;
+    u--,v--;
+    adj[u].push_back({v,w});
+    adj[v].push_back({u,w});
+  }
+  // start a dfs from a and then b;
+  auto dfs = [&](int node,int parent,int pathxor,vector<int> &current,auto &&dfs) -> void {
+    current[node] = pathxor;
+    for(auto &[v,w] : adj[node]){
+      if(v == parent) continue;
+      dfs(v,node,pathxor ^ w,current,dfs); 
+    }
+  };
+  vector<int> froma(n),fromb(n);
+  dfs(a,-1,0,froma,dfs);
+  dfs(b,-1,0,fromb,dfs);
+  set<int> lookup;
+  for(int i = 0;i<n;i++){
+    if(i == b) continue;
+    lookup.insert(fromb[i]);
+  }
+  for(int i = 0;i<n;i++){
+    int current = froma[i];
+    if(lookup.count(current)){
+      cout << "Yes" << endl;
+      return;
     }
   }
+  cout << "No" << endl;
 }
 
 
 
 
 
-/*
-We sort the smartness values and use two pointers to find the smallest team that is collectively proficient in all m topics. 
-A team is proficient if, for every topic T from 1 to m, at least one student has smartness divisible by T. 
-We maintain a frequency array f to count how many students cover each topic and a counter count to track 
-how many topics are currently covered. As we expand the window with the right pointer, we add students 
-and update f and count using their factors ≤ m. When count == m, we try to shrink the window from 
-the left to minimize the smartness difference a[r] - a[l]. We keep track of the minimum such difference across all valid windows.
-*/
-
-
-
-
-
-
-void solve() {
-  int n, m;
-  cin >> n >> m;
-  vector<int> a(n);
-  for (auto &it : a) cin >> it;
-  sort(a.begin(), a.end());
-  vector<int> f(m + 1, 0);
-  int left = 0, count = 0;
-  int ans = INT_MAX;
-  for (int right = 0; right < n; ++right) {
-    for (int fac : factors[a[right]]) {
-      if (fac > m) break;
-      if (f[fac] == 0) count++;
-      f[fac]++;
-    }
-    while (count == m) {
-      ans = min(ans, a[right] - a[left]);
-      for (int fac : factors[a[left]]) {
-        if (fac > m) break;
-        f[fac]--;
-        if (f[fac] == 0) count--;
-      }
-      left++;
-    }
-  }
-    cout << (ans == INT_MAX ? -1 : ans) << endl;
-  }
 
 
 
@@ -107,29 +99,24 @@ void solve() {
 
 
 
-
-
-
-
-  signed main() {
-    auto begin = std::chrono::high_resolution_clock::now();
-    ios::sync_with_stdio(0);
-    cin.tie(0);
-    cout.tie(0);
+signed main() {
+   auto begin = std::chrono::high_resolution_clock::now();
+   ios::sync_with_stdio(0);
+   cin.tie(0);
+   cout.tie(0);
 
 #ifndef ONLINE_JUDGE
-    freopen("input.txt","r",stdin);
-    freopen("output.txt","w",stdout);
-    freopen("Error.txt", "w", stderr);
+  freopen("input.txt","r",stdin);
+  freopen("output.txt","w",stdout);
+  freopen("Error.txt", "w", stderr);
 #endif
-    init();
-    int t;
-    cin >> t;
-    while (t--) {
-      solve(); 
-    }
-    auto end = std::chrono::high_resolution_clock::now();
-    auto elapsed = std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin);
-    cerr << "Time measured: " << elapsed.count() * 1e-9 << " seconds.\n";
-    return 0;
-  }
+   int t;
+   cin >> t;
+   while (t--) {
+     solve(); 
+   }
+   auto end = std::chrono::high_resolution_clock::now();
+   auto elapsed = std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin);
+   cerr << "Time measured: " << elapsed.count() * 1e-9 << " seconds.\n";
+   return 0;
+}
