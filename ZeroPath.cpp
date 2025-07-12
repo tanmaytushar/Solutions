@@ -42,49 +42,38 @@ template <class T, class V> void _print(map <T, V> v) {cerr << "[ "; for (auto i
 
 
 
-/*
-Three observation 
-1st -> The parity of all the elements that are achievable at a cell are same 
-2nd -> we cannot have a sum = 0 if (n+m-1) is odd i.e the path len
-3rd -> we can achieve any element from max to min of same parity 
-Proof:
-Let’s say you have two paths: p1 (min sum) and p2 (max sum).
-Since they have the same number of steps, you can turn p1 into p2 by swapping adjacent directions (like turning a "DR" into "RD"), i.e., tweaking the path slightly.
-Each such tweak replaces one grid cell with another adjacent one — the sum can change by ±2 or 0.
-Hence, from min_sum to max_sum, every value with the same parity can be hit during such tweaks — especially 0, if it lies in between.
-*/
+
 
 
 
 
 
 void solve(){
-  int n,m;cin >> n >> m;
-  vector<vector<int>> a(n,vector<int>(m)),mn(n,vector<int>(m)),mx(n,vector<int>(m));
-  for(auto &it : a) for(auto &i : it) cin >> i;
-  if((n + m - 1) % 2){
-    cout << "No" << endl;
-    return;
+  int n;cin >> n;
+  vector<int> a(n);for(auto &it : a) cin >> it;
+  map<int,vector<int>> m1;
+  for(int i = 0;i<n;i++){
+    m1[a[i]].push_back(i);
   }
-  mn[0][0] = mx[0][0] = a[0][0];
-
-  for(int i = 1; i < n; ++i)
-    mx[i][0] = mn[i][0] = mx[i - 1][0] + a[i][0];
-
-  for(int j = 1; j < m; ++j)
-    mx[0][j] = mn[0][j] = mx[0][j - 1] + a[0][j];
-
-  for(int i = 1; i < n; ++i){
-    for(int j = 1; j < m; ++j){
-      mx[i][j] = max(mx[i - 1][j], mx[i][j - 1]) + a[i][j];
-      mn[i][j] = min(mn[i - 1][j], mn[i][j - 1]) + a[i][j];
+  int ans = a[0],l = 0,r = 0;
+  for(auto &[ele,v] : m1){
+    int tempans = ele,templ = v[0],tempr = v[0],prefix = 0,mnprefix = 0,mnprefixindex = 0;
+    for(int i = 0;i<v.size();i++){
+      int between = v[i] - (i-1 >= 0 ? v[i-1] : v[i]);
+      prefix++;prefix -= between;
+      if(prefix < mnprefix){
+        mnprefix = min(prefix,mnprefix);
+        mnprefixindex = i; 
+      }
+      if(prefix - mnprefix > (tempr - templ)){
+        tempr = v[i],templ = mnprefixindex+1; 
+      } 
+    }
+    if(tempr - templ > r - l){
+      r = tempr,l = templ, ans = ele;
     }
   }
-  if(mx[n-1][m-1] < 0 || mn[n-1][m-1] > 0){
-    cout << "No" << endl;
-  }else{
-    cout << "Yes" << endl;
-  }
+  cout << ans << " " << l << " " << r << endl;
 }
 
 
@@ -103,25 +92,24 @@ void solve(){
 
 
 
-
 signed main() {
-  auto begin = std::chrono::high_resolution_clock::now();
-  ios::sync_with_stdio(0);
-  cin.tie(0);
-  cout.tie(0);
+   auto begin = std::chrono::high_resolution_clock::now();
+   ios::sync_with_stdio(0);
+   cin.tie(0);
+   cout.tie(0);
 
 #ifndef ONLINE_JUDGE
   freopen("input.txt","r",stdin);
   freopen("output.txt","w",stdout);
   freopen("Error.txt", "w", stderr);
 #endif
-  int t;
-  cin >> t;
-  while (t--) {
-    solve(); 
-  }
-  auto end = std::chrono::high_resolution_clock::now();
-  auto elapsed = std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin);
-  cerr << "Time measured: " << elapsed.count() * 1e-9 << " seconds.\n";
-  return 0;
+   int t;
+   cin >> t;
+   while (t--) {
+     solve(); 
+   }
+   auto end = std::chrono::high_resolution_clock::now();
+   auto elapsed = std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin);
+   cerr << "Time measured: " << elapsed.count() * 1e-9 << " seconds.\n";
+   return 0;
 }
