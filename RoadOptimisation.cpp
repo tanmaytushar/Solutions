@@ -43,37 +43,28 @@ template <class T, class V> void _print(map <T, V> v) {cerr << "[ "; for (auto i
 
 
 
+/*
+count all possible triples and subtract the number of bad triples.
+Since all problems in the input are different, it means that every bad triple has the following form: [(xa,ya),(xb,ya),(xa,yb)]
+i.e. there exists a problem such that it shares the difficulty with one of the other two problems, and the topic with the remaining problem of the triple.
+we will iterate on the "central" problem
+*/
 
 
 
 
 void solve() {
-    int n, l, k;
-    cin >> n >> l >> k;
-    vector<int> pos(n), limit(n);
-    for (auto &it : pos) cin >> it;
-    for (auto &it : limit) cin >> it;
-
-    vector<vector<int>> dp(n + 1, vector<int>(k + 1, -1));
-
-    function<int(int, int)> rec = [&](int index, int left) -> int {
-        if (left < 0) return 1e9;
-        if (index == n) return 0;
-        if (dp[index][left] != -1) return dp[index][left];
-
-        int ans = 1e9;
-        // Try every possible next sign to jump to (removing all the signs in between)
-        for (int next = index + 1; next <= n;next++) {
-            int removed = next - index - 1;
-            if (left - removed < 0) continue;
-            int dist = (next < n ? pos[next] : l) - pos[index];
-            int time = dist * limit[index];
-            ans = min(ans, time + rec(next, left - removed));
-        }
-        return dp[index][left] = ans;
-    };
-
-    cout << rec(0, k) << endl;
+  int n;
+  cin >> n;
+  vector<int> a(n), b(n), ca(n + 1), cb(n + 1);
+  for (int i = 0; i < n; ++i) {
+    cin >> a[i] >> b[i];
+    ca[a[i]]++; cb[b[i]]++;
+  }
+  long long ans = n * 1LL * (n - 1) * (n - 2) / 6;
+  for (int i = 0; i < n; ++i) 
+    ans -= (ca[a[i]] - 1) * 1LL * (cb[b[i]] - 1);
+  cout << ans << '\n';
 }
 
 
@@ -103,7 +94,8 @@ signed main() {
   freopen("output.txt","w",stdout);
   freopen("Error.txt", "w", stderr);
 #endif
-   int t = 1;
+   int t;
+   cin >> t;
    while (t--) {
      solve(); 
    }
